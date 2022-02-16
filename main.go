@@ -2,70 +2,39 @@ package main
 
 import "fmt"
 
-// type myCustomInt int
-// type myOtherCustomInt int
+// Signed is a constraint whose type set is any signed integer type.
+type Signed interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64
+}
 
-// type customInts interface {
-// 	myCustomInt | myOtherCustomInt
-// }
+// Unsigned is a constraint whose type set is any unsigned integer type.
+type Unsigned interface {
+	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+}
+
+// Float is a constraint whose type set is any floating point type.
+type Float interface {
+	~float32 | ~float64
+}
+
+// Ordered is a constraint whose type set is any ordered type.
+// That is, any type that supports the < operator.
+type Ordered interface {
+	Signed | Unsigned | Float | ~string
+}
 
 func main() {
-	intValue := 10
-	int64Value := int64(20)
-	float64Value := float64(30)
-	stringValue := "40"
-	arrayValue := []rune{'a', 'b', 'c'}
-	boolValue := true
-	mapValue := map[string]string{"k1": "v1"}
-	structValue := struct{}{}
+	x1, y1 := 1, 2
+	fmt.Println(isLower(x1, y1))
 
-	fmt.Println(DescribeVar(intValue))
-	fmt.Println(DescribeVar(int64Value))
-	fmt.Println(DescribeVar(float64Value))
-	fmt.Println(DescribeVar(stringValue))
-	fmt.Println(DescribeVar(arrayValue))
-	fmt.Println(DescribeVar(boolValue))
-	fmt.Println(DescribeVar(mapValue))
-	fmt.Println(DescribeVar(structValue))
+	x2, y2 := -5.0, -10.0
+	fmt.Println(isLower(x2, y2))
 
-	// // for tilde operator
-	// var customInt myCustomInt = 100
-	// var otherCustomInt myOtherCustomInt = 200
-
-	// fmt.Println(DescribeVar(customInt))
-	// fmt.Println(DescribeVar(otherCustomInt))
+	x3, y3 := "a", "b"
+	fmt.Println(isLower(x3, y3))
 }
 
-// Hardcode the types of the variable
-func DescribeVar[T int | int64 | float64 | string | []rune | bool | map[string]string | struct{}](v T) string {
-	return fmt.Sprintf("Param 'v' is of type %T and its value is: %v", v, v)
+// isLower returns true if x is lower than y, otherwise returns false
+func isLower[T Ordered](x, y T) bool {
+	return x < y
 }
-
-// // Interface approach
-// type myValues interface {
-// 	int | int64 | float64 |
-// 	string | []rune | bool |
-// 	map[string]string | struct{}
-// }
-
-// func DescribeVar[T myValues](v T) string {
-// 	return fmt.Sprintf("Param 'v' is of type %T and its value is: %v", v, v)
-// }
-
-// // Any (interface{}) apprach
-// func DescribeVar[T any](v T) string {
-// 	return fmt.Sprintf("Param 'v' is of type %T and its value is: %v", v, v)
-// }
-
-// func DescribeVar[T interface{}](v T) string {
-// 	return fmt.Sprintf("Param 'v' is of type %T and its value is: %v", v, v)
-// }
-
-// // Custom types (tilde operator)
-// func DescribeVar[T int | myCustomInt | myOtherCustomInt](v T) string {
-// 	return fmt.Sprintf("Param 'v' is of type %T and its value is: %v", v, v)
-// }
-
-// func DescribeVar[T ~int](v T) string {
-// 	return fmt.Sprintf("Param 'v' is of type %T and its value is: %v", v, v)
-// }
